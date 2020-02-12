@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ../..
+cd /storage/gold/cinn/2019/SRfMRI/
 
 for i in 02 03 04 05
 
