@@ -1,0 +1,23 @@
+#!/bin/bash
+
+cd ../..
+
+for i in 02 03 04 05
+
+do 
+
+echo merging fieldmaps ${i}
+
+fslmerge -t preprocessed/sub-0${i}/fmap/my_b0s.nii.gz BIDS/sub-0${i}/fmap/sub-0${i}_acq-AP_fieldmap.nii.gz BIDS/sub-0${i}/fmap/sub-0${i}_acq-PA_fieldmap.nii.gz
+
+echo topup ${i}
+
+topup --imain=preprocessed/sub-0${i}/fmap/my_b0s.nii.gz --datain=acquisition_parameters.txt --config=b02b0.cnf --fout=preprocessed/sub-0${i}/fmap/my_fmap_fout --iout=preprocessed/sub-0${i}/fmap/my_fmap_iout
+
+echo fslmaths ${i}
+
+fslmaths preprocessed/sub-0${i}/fmap/my_fmap_iout.nii.gz -Tmean preprocessed/sub-0${i}/fmap/my_fmap_mag.nii.gz
+
+echo finished ${i}
+
+done 

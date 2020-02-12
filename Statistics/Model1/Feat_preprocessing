@@ -1,0 +1,35 @@
+#!/bin/bash
+
+cd ../..
+
+for i in 002 003 004 005
+
+do
+
+echo starting ${i}
+
+#Set participant id for sed
+
+id=sub-${i}
+
+#Set the correct number of volumes for each participant
+
+v=`fslinfo BIDS/${id}/func/${id}_task-main_bold.nii.gz | grep "^dim4" | awk '{print $2}'`
+
+volVox=1376256 # Number of voxels in a single volume
+
+let nVox=volVox*v # Total number of voxels for acqusition
+
+echo ${v} volumes, creating file ${i}
+
+# Substitute values
+
+sed -e "s/sub-001/${id}/g" -e "s/1824915456/${nVox}/g" -e "s/1326/${v}/g" <Feat_Preprocessing.fsf> Feat_Preprocessing_${id}.fsf
+
+echo starting Feat ${i}
+
+feat Feat_Preprocessing_${id}.fsf
+
+echo Feat fin ${i}
+
+done

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#setup
+
+export SUBJECTS_DIR=/storage/gold/cinn/2019/SRfMRI/Freesurfer
+
+letsSurf () {
+	echo $1 recon all beginning
+	recon-all -subject $1 -i /storage/gold/cinn/2019/SRfMRI/BIDS/$1/anat/$1_rec-NORM_T1w.nii.gz -all -cm
+	echo $1 recon all finished
+	echo $1 thalamic segmentation beginnning
+	segmentThalamicNuclei.sh $1
+	echo $1 thalamic segmentation finished	
+}
+export -f letsSurf
+
+parallel letsSurf ::: sub-001 sub-002 sub-003 sub-004 sub-005 sub-00006
