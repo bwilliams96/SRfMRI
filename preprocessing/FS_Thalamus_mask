@@ -3,18 +3,22 @@
 
 #setup
 
-#based on info from https://surfer.nmr.mgh.harvard.edu/fswiki/FsTutorial/MapSegmentationsToFunctionalSpace
+#based on info from https://surfer.nmr.mgh.harvard.edu/fswiki/mri_binarize
 
 #to get ID codes for other regions, see /usr/local/freesurfer/FreeSurferColorLUT.txt
 
 export SUBJECTS_DIR=/storage/gold/cinn/2019/SRfMRI/Freesurfer
 
 masktime () {
-	aseg2feat --feat $1.feat --aseg ThalamicNuclei.v10.T1.FSvoxelSpace
-	fslmaths ./$1.feat/reg/freesurfer/ThalamicNuclei.v10.T1FSvoxelSpace.nii.gz -thr 8118 -uthr 8118 ./$1.feat/reg/freesurfer/lh.pf.nii.gz
-	fslmaths ./$1.feat/reg/freesurfer/ThalamicNuclei.v10.T1FSvoxelSpace.nii.gz -thr 8106 -uthr 8106 ./$1.feat/reg/freesurfer/lh.cm.nii.gz
-	fslmaths ./$1.feat/reg/freesurfer/ThalamicNuclei.v10.T1FSvoxelSpace.nii.gz -thr 8206 -uthr 8206 ./$1.feat/reg/freesurfer/rh.cm.nii.gz
-fslmaths ./$1.feat/reg/freesurfer/ThalamicNuclei.v10.T1FSvoxelSpace.nii.gz -thr 8218 -uthr 8218 ./$1.feat/reg/freesurfer/rh.pf.nii.gz
+mkdir -p /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks
+
+mri_binarize --i /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-CM.mgz --match 8106
+
+mri_binarize --i /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-Pf.mgz --match 8118
+
+mri_binarize --i /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-CM.mgz --match 8206
+
+mri_binarize --i /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-Pf.mgz --match 8218
 }
 
 export -f masktime
