@@ -1,0 +1,31 @@
+
+#!/bin/bash
+
+#setup
+
+export SUBJECTS_DIR=/storage/gold/cinn/2019/SRfMRI/Freesurfer
+
+masking () {
+	echo converting $1 masks
+
+#convert masks to nifti file format
+
+	mri_convert --in_type mgz --out_type nii /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-CM.mgz /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-CM.nii.gz
+
+	mri_convert --in_type mgz --out_type nii /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-CM.mgz /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-CM.nii.gz
+
+	mri_convert --in_type mgz --out_type nii /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-Pf.mgz /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-Pf.nii.gz
+
+	mri_convert --in_type mgz --out_type nii /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-Pf.mgz /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-Pf.nii.gz
+
+#Invert example_func2highres_warp and apply to masks
+
+	invwarp -w /storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/example_func2highres_warp -o /storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/highres2example_func_warp -r /storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/highres
+
+
+	applywarp -i /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-CM -r /storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/example_func -o /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-CM_func -w /storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/highres2example_func_warp
+	
+}
+export -f masking
+
+masking "sub-001"
