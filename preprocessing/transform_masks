@@ -2,33 +2,34 @@
 #!/bin/bash
 
 #setup
+export PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
+export SUBJECTS_DIR=$PROJECT_DIR/Freesurfer
 
-export SUBJECTS_DIR=/storage/gold/cinn/2019/SRfMRI/Freesurfer
 
 masking () {
 	echo converting $1 masks
 
 #convert masks to nifti file format
 
-	mri_convert --in_type mgz --out_type nii /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-CM.mgz /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-CM.nii.gz --cropsize 192 256 256
+	mri_convert --in_type mgz --out_type nii $SUBJECTS_DIR/$1/mri/masks/Left-CM.mgz $SUBJECTS_DIR/$1/mri/masks/Left-CM.nii.gz --cropsize 192 256 256
 
-	mri_convert --in_type mgz --out_type nii /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-CM.mgz /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-CM.nii.gz  --cropsize 192 256 256
+	mri_convert --in_type mgz --out_type nii $SUBJECTS_DIR/$1/mri/masks/Right-CM.mgz $SUBJECTS_DIR/$1/mri/masks/Right-CM.nii.gz  --cropsize 192 256 256
 
-	mri_convert --in_type mgz --out_type nii /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-Pf.mgz /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-Pf.nii.gz  --cropsize 192 256 256
+	mri_convert --in_type mgz --out_type nii $SUBJECTS_DIR/$1/mri/masks/Left-Pf.mgz $SUBJECTS_DIR/$1/mri/masks/Left-Pf.nii.gz  --cropsize 192 256 256
 
-	mri_convert --in_type mgz --out_type nii /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-Pf.mgz /storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-Pf.nii.gz  --cropsize 192 256 256
+	mri_convert --in_type mgz --out_type nii $SUBJECTS_DIR/$1/mri/masks/Right-Pf.mgz $SUBJECTS_DIR/$1/mri/masks/Right-Pf.nii.gz  --cropsize 192 256 256
 
 #Invert example_func2highres_warp and apply to masks
 
-	invwarp --ref=/storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/highres --warp=/storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/example_func2highres_warp --out=/storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/highres2example_func_warp
+	invwarp --ref=$PROJECT_DIR/preprocessed/$1/func.feat/reg/highres --warp=$PROJECT_DIR/preprocessed/$1/func.feat/reg/example_func2highres_warp --out=$PROJECT_DIR/preprocessed/$1/func.feat/reg/highres2example_func_warp
 
-	applywarp --ref=/storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/example_func --in=/storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-CM  --warp=/storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/highres2example_func_warp --out=/storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-CM_func
+	applywarp --ref=$PROJECT_DIR/preprocessed/$1/func.feat/reg/example_func --in=$SUBJECTS_DIR/$1/mri/masks/Left-CM  --warp=$PROJECT_DIR/preprocessed/$1/func.feat/reg/highres2example_func_warp --out=$SUBJECTS_DIR/$1/mri/masks/Left-CM_func
 
-	applywarp --ref=/storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/example_func --in=/storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-Pf  --warp=/storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/highres2example_func_warp --out=/storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Left-Pf_func
+	applywarp --ref=$PROJECT_DIR/preprocessed/$1/func.feat/reg/example_func --in=$SUBJECTS_DIR/$1/mri/masks/Left-Pf  --warp=$PROJECT_DIR/preprocessed/$1/func.feat/reg/highres2example_func_warp --out=$SUBJECTS_DIR/$1/mri/masks/Left-Pf_func
 
-	applywarp --ref=/storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/example_func --in=/storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-CM  --warp=/storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/highres2example_func_warp --out=/storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-CM_func
+	applywarp --ref=$PROJECT_DIR/preprocessed/$1/func.feat/reg/example_func --in=$SUBJECTS_DIR/$1/mri/masks/Right-CM  --warp=$PROJECT_DIR/preprocessed/$1/func.feat/reg/highres2example_func_warp --out=$SUBJECTS_DIR/$1/mri/masks/Right-CM_func
 
-	applywarp --ref=/storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/example_func --in=/storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-Pf  --warp=/storage/gold/cinn/2019/SRfMRI/preprocessed/$1/func.feat/reg/highres2example_func_warp --out=/storage/gold/cinn/2019/SRfMRI/Freesurfer/$1/mri/masks/Right-Pf_func
+	applywarp --ref=$PROJECT_DIR/preprocessed/$1/func.feat/reg/example_func --in=$SUBJECTS_DIR/$1/mri/masks/Right-Pf  --warp=$PROJECT_DIR/preprocessed/$1/func.feat/reg/highres2example_func_warp --out=$SUBJECTS_DIR/$1/mri/masks/Right-Pf_func
 	
 }
 export -f masking
