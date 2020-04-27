@@ -1,23 +1,56 @@
 #!/bin/bash
+# Brendan Williams - April 2020
+# This script will create fieldmaps using topup in fsl. The phase encoding directions for the fieldmap's json file will be parsed to correctly set the parameters for an acqusition parameter file that will be created and used by the script for topup.
 
-cd /storage/gold/cinn/2019/SRfMRI/
+topup () {
+PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
+BIDS_DIR=$PROJECT_DIR/BIDS
 
-for i in 02 03 04 05
+AP=`grep -Po '"PhaseEncodingDirection": *\K"[^"]*"' $BIDS_DIR/$1/fmap/$1_acq-AP_fieldmap.json`
 
-do 
+PA=`grep -Po '"PhaseEncodingDirection": *\K"[^"]*"' $BIDS_DIR/$1/fmap/$1_acq-PA_fieldmap.json`
 
-echo merging fieldmaps ${i}
+TRT=`grep -Po '"TotalReadoutTime": *\K"[^"]*"' $BIDS_DIR/$1/fmap/$1_acq-PA_fieldmap.json`
 
-fslmerge -t preprocessed/sub-0${i}/fmap/my_b0s.nii.gz BIDS/sub-0${i}/fmap/sub-0${i}_acq-AP_fieldmap.nii.gz BIDS/sub-0${i}/fmap/sub-0${i}_acq-PA_fieldmap.nii.gz
+for i in $AP $PA
+do
+if [ $i -eq "j-" ]
+then
+$i_out=`0	1	0`
+elif [ $i -eq "j" ]
+then
+$i_out=`0	-1	0`
+elif [ $i -eq "i-" ]
+then
+$i_out=`1	0	0`
+elif [ $i -eq "i" ]
+then
+$i_out=`-1	0	0`
+fi
+done
 
-echo topup ${i}
+>$BIDS_DIR/$1/fmap/$1_acquisition_parameters.txt
 
-topup --imain=preprocessed/sub-0${i}/fmap/my_b0s.nii.gz --datain=acquisition_parameters.txt --config=b02b0.cnf --fout=preprocessed/sub-0${i}/fmap/my_fmap_fout --iout=preprocessed/sub-0${i}/fmap/my_fmap_iout
+for i in $AP_out $PA_out
+do
+for ii in {1..3}
+do
+printf '%s\t%s\n' $i $TRT >> $BIDS_DIR/$1/fmap/$1_acquisition_parameters.txt
+done
+done
 
-echo fslmaths ${i}
+echo merging fieldmaps $1
 
-fslmaths preprocessed/sub-0${i}/fmap/my_fmap_iout.nii.gz -Tmean preprocessed/sub-0${i}/fmap/my_fmap_mag.nii.gz
+fslmerge -t $PROJECT_DIR/preprocessed/$1/fmap/my_b0s.nii.gz $BIDS_DIR/$1/fmap/$1_acq-AP_fieldmap.nii.gz $BIDS_DIR/$1/fmap/$1_acq-PA_fieldmap.nii.gz
 
-echo finished ${i}
+echo topup $1
 
-done 
+topup --imain=$PROJECT_DIR/preprocessed/$1/fmap/my_b0s.nii.gz --datain=$BIDS_DIR/$1/fmap/$1_acquisition_parameters.txt --config=b02b0.cnf --fout=$PROJECT_DIR/preprocessed/$1/fmap/my_fmap_fout --iout=$PROJECT_DIR/preprocessed/$1/fmap/my_fmap_iout
+
+echo fslmaths $1
+
+fslmaths $PROJECT_DIR/preprocessed/$1/fmap/my_fmap_iout.nii.gz -Tmean $PROJECT_DIR/preprocessed/$1/fmap/my_fmap_mag.nii.gz
+
+echo finished $1
+
+}
