@@ -1,0 +1,42 @@
+#!/bin/bash
+# Brendan Williams - April 2020
+# This script will combine the CM + Pf, and MDl + MDm masks, and create a new directory with all masks for timeseries extraction included.
+LT_DIR=/storage/gold/cinn/2013/neuroade/LTFI_Analysis
+MASK_DIR=$LT_DIR/BW_masks
+BIN_THR=0.3
+
+cd $MASK_DIR/
+
+for ii in */
+
+do 
+
+mkdir -p $MASK_DIR/${ii}/Analysis
+cd ${MASK_DIR}/${ii}/func_binarised
+
+fslmaths Left-CM_func_binary${BIN_THR}.nii.gz -add Left-Pf_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Left-CMPf_func_binary${BIN_THR}.nii.gz
+
+fslmaths $MASK_DIR/${ii}/Analysis/Left-CMPf_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Left-CMPf_func_binary${BIN_THR}.nii.gz
+
+fslmaths Left-MDl_func_binary${BIN_THR}.nii.gz -add Left-MDm_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Left-MD_func_binary${BIN_THR}.nii.gz
+
+fslmaths $MASK_DIR/${ii}/Analysis/Left-MD_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Left-MD_func_binary${BIN_THR}.nii.gz
+
+cp Left-lOFC_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Left-lOFC_func_binary${BIN_THR}.nii.gz
+
+cp Left-mOFC_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Left-mOFC_func_binary${BIN_THR}.nii.gz
+
+fslmaths Right-CM_func_binary${BIN_THR}.nii.gz -add Right-Pf_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-CMPf_func_binary${BIN_THR}.nii.gz
+
+fslmaths $MASK_DIR/${ii}/Analysis/Right-CMPf_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Right-CMPf_func_binary${BIN_THR}.nii.gz
+
+fslmaths Right-MDl_func_binary${BIN_THR}.nii.gz -add Right-MDm_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-MD_func_binary${BIN_THR}.nii.gz
+
+fslmaths $MASK_DIR/${ii}/Analysis/Right-MD_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Right-MD_func_binary${BIN_THR}.nii.gz
+
+cp Right-lOFC_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-lOFC_func_binary${BIN_THR}.nii.gz
+
+cp Right-mOFC_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-mOFC_func_binary${BIN_THR}.nii.gz
+
+
+done

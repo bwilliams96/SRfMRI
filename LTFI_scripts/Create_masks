@@ -1,0 +1,72 @@
+#!/bin/bash
+# Brendan Williams - April 2020
+# This script will extract anatomical space masks from freesurfer segmentation, convert the files to nitfi (NOTE, the dimensions for mgz to nii converted images (vs feat dir examples) needs to be checked and adjusted if needed), apply an affine transformation to move the masks into functional space, and binarise the masks. 
+LT_DIR=/storage/gold/cinn/2013/neuroade/LTFI_Analysis
+FS_DIR=$LT_DIR/Freesurfer_output
+FEAT_DIR=$LT_DIR/LTFI_FEAT_PE_FB_R1
+MASK_DIR=$LT_DIR/BW_masks
+BIN_THR=0.3 #Threshold for fslmaths binarisation
+
+cd $LT_DIR/LTFI_Control_FEAT
+
+for ii in */
+
+do 
+
+i="${ii%.*}"
+
+echo Creating ${i} masks
+
+mkdir -p $MASK_DIR/${i}/{anat,anat_resampled,anat_resampled_unswapped,func,func_binarised}
+
+# Extract masks from freesurfer segmentation
+mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MASK_DIR/${i}/anat/Left-CM.mgz --match 8106
+mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MASK_DIR/${i}/anat/Left-Pf.mgz --match 8118
+mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MASK_DIR/${i}/anat/Right-CM.mgz --match 8206
+mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MASK_DIR/${i}/anat/Right-Pf.mgz --match 8218
+mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MASK_DIR/${i}/anat/Left-MDl.mgz --match 8112
+mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MASK_DIR/${i}/anat/Left-MDm.mgz --match 8113
+mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MASK_DIR/${i}/anat/Right-MDl.mgz --match 8212
+mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MASK_DIR/${i}/anat/Right-MDm.mgz --match 8213
+mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg.mgz --o $MASK_DIR/${i}/anat/Right-mOFC.mgz --match 12164
+mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg.mgz --o $MASK_DIR/${i}/anat/Right-lOFC.mgz --match 12165
+mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg.mgz --o $MASK_DIR/${i}/anat/Left-mOFC.mgz --match 11164
+mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg.mgz --o $MASK_DIR/${i}/anat/Left-lOFC.mgz --match 11165
+
+echo converting ${i} masks to nifti
+
+cd $MASK_DIR/${i}/anat
+
+for f in *
+
+do
+
+filename="${f%.*}"
+
+d1=`fslinfo $FEAT_DIR/${i}.feat/reg/highres.nii.gz | grep "^dim1" | awk '{print $2}'`
+d2=`fslinfo $FEAT_DIR/${i}.feat/reg/highres.nii.gz | grep "^dim3" | awk '{print $2}'`
+d3=`fslinfo $FEAT_DIR/${i}.feat/reg/highres.nii.gz | grep "^dim2" | awk '{print $2}'`
+
+mri_convert --in_type mgz --out_type nii $MASK_DIR/${i}/anat/${f} $MASK_DIR/${i}/anat_resampled_unswapped/${filename}.nii.gz --cropsize ${d1} ${d2} ${d3}
+
+fslswapdim $MASK_DIR/${i}/anat_resampled_unswapped/${filename}.nii.gz x PA IS $MASK_DIR/${i}/anat_resampled/${filename}.nii.gz
+
+done
+
+echo applying ${i} warp
+
+cd $MASK_DIR/${i}/anat_resampled
+
+for f in *
+
+do
+
+filename="${f%%.*}"
+
+flirt -in ${f} -ref $FEAT_DIR/${i}.feat/reg/example_func -out $MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz -init $FEAT_DIR/${i}.feat/reg/highres2example_func.mat -applyxfm
+
+fslmaths $MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz -thr $BIN_THR -bin $MASK_DIR/${i}/func_binarised/${filename}_func_binary${BIN_THR}.nii.gz
+
+done
+
+done 

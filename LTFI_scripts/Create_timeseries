@@ -1,0 +1,37 @@
+#!/bin/bash
+# Brendan Williams - April 2020
+# This script will use the binarised functional space masks to extract the functional timeseries from the LTFI dataset.
+LT_DIR=/storage/gold/cinn/2013/neuroade/LTFI_Analysis
+MASK_DIR=$LT_DIR/BW_masks
+TS_DIR=$LT_DIR/BW_timeseries
+
+
+for ii in Task_C1 Task_C2 Task_R1 Task_R2
+
+do 
+
+mkdir -p $TS_DIR/${ii}
+cd ${LT_DIR}/${ii}
+
+for f in *
+
+do
+
+i=${f:0:7}
+
+echo $ii $i
+mkdir -p $TS_DIR/${ii}/${i}
+cd ${MASK_DIR}/${i}/Analysis
+for mask in *
+
+do
+
+maskname="${mask%.*}"
+echo $maskname
+fslmeants -i ${LT_DIR}/${ii}/${f} -m ${MASK_DIR}/${i}/Analysis/${mask} -o $TS_DIR/${ii}/${i}/${maskname}.txt
+
+done
+
+done
+
+done
