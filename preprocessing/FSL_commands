@@ -1,6 +1,78 @@
 #!/bin/bash
 
 # Brendan Williams - April 2020
+# This function will use the binarised functional space masks to extract the functional timeseries from the SR dataset.
+
+extmask () {
+PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
+MASK_DIR=$PROJECT_DIR/masks
+TS_DIR=$PROJECT_DIR/timeseries
+
+mkdir -p $TS_DIR/${1}
+cd ${MASK_DIR}/${1}/Analysis
+
+for mask in *
+
+do
+
+maskname="${mask%.*}"
+echo $maskname
+fslmeants -i $PROJECT_DIR/preprocessed/${1}/func/${1}_task-main_bold_mcf.nii.gz -m ${mask} -o $TS_DIR/${1}/${maskname}.txt
+
+done
+
+}
+
+
+# Brendan Williams - April 2020
+# This function will combine the CM + Pf, and MDl + MDm masks, and create a new directory with all masks (cortical, striatal, and thalamic) for timeseries extraction included.
+
+mergemask () {
+PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
+MASK_DIR=$PROJECT_DIR/masks
+BIN_THR=0.3
+
+cd $MASK_DIR/
+
+for ii in $1
+
+do 
+
+mkdir -p $MASK_DIR/${ii}/Analysis
+cd ${MASK_DIR}/${ii}/func_binarised
+
+fslmaths Left-CM_func_binary${BIN_THR}.nii.gz -add Left-Pf_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Left-CMPf_func_binary${BIN_THR}.nii.gz
+
+fslmaths $MASK_DIR/${ii}/Analysis/Left-CMPf_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Left-CMPf_func_binary${BIN_THR}.nii.gz
+
+fslmaths Left-MDl_func_binary${BIN_THR}.nii.gz -add Left-MDm_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Left-MD_func_binary${BIN_THR}.nii.gz
+
+fslmaths $MASK_DIR/${ii}/Analysis/Left-MD_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Left-MD_func_binary${BIN_THR}.nii.gz
+
+cp Left-lOFC_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Left-lOFC_func_binary${BIN_THR}.nii.gz
+
+cp Left-mOFC_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Left-mOFC_func_binary${BIN_THR}.nii.gz
+
+cp AC_DC_VC_L_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/AC_DC_VC_L_func_binary${BIN_THR}.nii.gz
+
+fslmaths Right-CM_func_binary${BIN_THR}.nii.gz -add Right-Pf_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-CMPf_func_binary${BIN_THR}.nii.gz
+
+fslmaths $MASK_DIR/${ii}/Analysis/Right-CMPf_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Right-CMPf_func_binary${BIN_THR}.nii.gz
+
+fslmaths Right-MDl_func_binary${BIN_THR}.nii.gz -add Right-MDm_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-MD_func_binary${BIN_THR}.nii.gz
+
+fslmaths $MASK_DIR/${ii}/Analysis/Right-MD_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Right-MD_func_binary${BIN_THR}.nii.gz
+
+cp Right-lOFC_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-lOFC_func_binary${BIN_THR}.nii.gz
+
+cp Right-mOFC_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-mOFC_func_binary${BIN_THR}.nii.gz
+
+cp AC_DC_VC_R_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/AC_DC_VC_R_func_binary${BIN_THR}.nii.gz
+
+
+}
+
+# Brendan Williams - April 2020
 # This script will run feat preprocessing based on a template fsf file
 
 featrun () {
