@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Brendan Williams - April 2020
+# This script will extract anatomical space masks from freesurfer segmentation, convert the files to nitfi (NOTE, the dimensions for mgz to nii converted images (vs feat dir examples) needs to be checked and adjusted if needed), apply an affine transformation to move the masks into functional space, and binarise the masks. 
+#to get ID codes for other regions, see /usr/local/freesurfer/FreeSurferColorLUT.txt
+
+strmask () {
+PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
+FS_DIR=$PROJECT_DIR/Freesurfer
+FEAT_DIR=$PROJECT_DIR/preprocessed
+MASK_DIR=$PROJECT_DIR/masks
+BIN_THR=0.3
+
+for i in "AC_DC_VC_L" "AC_DC_VC_R"
+do
+flirt -in $MASK_DIR/CHOI_STR_MNI/${i}.nii.gz -ref $FEAT_DIR/${1}/func.feat/reg/example_func -out $MASK_DIR/${1}/func/${i}_func.nii.gz -init $FEAT_DIR/${1}/func.feat/reg/standard2example_func.mat -applyxfm
+
+fslmaths $MASK_DIR/${1}/func/${i}_func.nii.gz -thr $BIN_THR -bin $MASK_DIR/${1}/func_binarised/${i}_func_binary${BIN_THR}.nii.gz
+done
+}
+
+"$@"
