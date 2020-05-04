@@ -22,7 +22,7 @@ echo topup ${i}
 
 topup --imain=$PROJECT_DIR/preprocessed/${i}/fmap/my_b0s.nii.gz --datain=$PROJECT_DIR/acquisition_parameters_temp.txt --config=b02b0.cnf --fout=$PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_fout --iout=$PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_iout
 
-fslmaths preprocessed/${i}/fmap/my_fmap_iout.nii.gz -Tmean preprocessed/${i}/fmap/my_fmap_mag.nii.gz
+fslmaths $PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_iout.nii.gz -Tmean $PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_mag.nii.gz
 
 rm $PROJECT_DIR/acquisition_parameters_temp.txt
 
