@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# This script will run the first phase of preprocessing for the SRfMRI dataset. This will include
+# Reorientation of the structural image
+# Preparation of fieldmaps for topup.
+# After the script has been run bet will need to be run manually to skull strip struct.nii.gz and my_fmap_mag.nii.gz.
+
+PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
+BIDS_DIR=$PROJECT_DIR/BIDS
+
+for i in "sub-001"
+
+do 
+
+mkdir -p $PROJECT_DIR/preprocessed/${i}/{anat,fmap,func,timing_files}
+
+fslreorient2std $BIDS_DIR/${i}/anat/${i}_rec-NORM_T1w.nii.gz $PROJECT_DIR/preprocessed/${i}/anat/struct.nii.gz
+
+bash $PROJECT_DIR/analysis_scripts/preprocessing/FSL_commands preptopup $i
+
+echo topup ${i}
+
+topup --imain=$PROJECT_DIR/preprocessed/${i}/fmap/my_b0s.nii.gz --datain=$PROJECT_DIR/acquisition_parameters_temp.txt --config=b02b0.cnf --fout=$PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_fout --iout=$PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_iout
+
+fslmaths preprocessed/${i}/fmap/my_fmap_iout.nii.gz -Tmean preprocessed/${i}/fmap/my_fmap_mag.nii.gz
+
+rm $PROJECT_DIR/acquisition_parameters_temp.txt
+
+echo finished ${i}
+
+done 

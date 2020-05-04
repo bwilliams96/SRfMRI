@@ -1,6 +1,67 @@
 #!/bin/bash
 
 # Brendan Williams - April 2020
+# This script will create fieldmaps using topup in fsl. The phase encoding directions for the fieldmap's json file will be parsed to correctly set the parameters for an acqusition parameter file that will be created and used by the script for topup.
+
+preptopup () {
+PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
+BIDS_DIR=$PROJECT_DIR/BIDS
+
+AP=`grep -Po '"PhaseEncodingDirection": *\K"[^"]*"' $BIDS_DIR/$1/fmap/$1_acq-AP_fieldmap.json`
+
+PA=`grep -Po '"PhaseEncodingDirection": *\K"[^"]*"' $BIDS_DIR/$1/fmap/$1_acq-PA_fieldmap.json`
+
+TRT=0.0476
+
+AP="${AP:1:${#AP}-2}"
+if [[ $AP == "j-" ]]
+then
+AP_out="0	1	0"
+elif [[ $AP == "j" ]]
+then
+AP_out="0	-1	0"
+elif [[ $AP == "i-" ]]
+then
+AP_out="1	0	0"
+elif [[ $AP == "i" ]]
+then
+AP_out="-1	0	0"
+else
+echo check fieldmap phase encoding direction
+fi
+
+PA="${PA:1:${#PA}-2}"
+if [[ $PA == "j-" ]]
+then
+PA_out="0	1	0"
+elif [[ $PA == "j" ]]
+then
+PA_out="0	-1	0"
+elif [[ $PA == "i-" ]]
+then
+PA_out="1	0	0"
+elif [[ $PA == "i" ]]
+then
+PA_out="-1	0	0"
+else
+echo check fieldmap phase encoding direction
+fi
+
+>$PROJECT_DIR/acquisition_parameters_temp.txt
+for i in "$AP_out" "$PA_out"
+do
+for ii in {1..3}
+do
+printf '%s\t%s\n' "$i" "$TRT" >> $PROJECT_DIR/acquisition_parameters_temp.txt
+done
+done
+
+echo merging fieldmaps $1
+
+fslmerge -t $PROJECT_DIR/preprocessed/$1/fmap/my_b0s.nii.gz $BIDS_DIR/$1/fmap/$1_acq-AP_fieldmap.nii.gz $BIDS_DIR/$1/fmap/$1_acq-PA_fieldmap.nii.gz
+}
+
+# Brendan Williams - April 2020
 # This function will use the binarised functional space masks to extract the functional timeseries from the SR dataset.
 
 extmask () {
@@ -69,6 +130,7 @@ cp Right-mOFC_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-mOFC_f
 
 cp AC_DC_VC_R_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/AC_DC_VC_R_func_binary${BIN_THR}.nii.gz
 
+done
 
 }
 
@@ -81,7 +143,7 @@ BIDS_DIR=$PROJECT_DIR/BIDS
 
 #Set the correct number of volumes for each participant
 
-v=`fslinfo $BIDS_DIR/${id}/func/${1}_task-main_bold.nii.gz | grep "^dim4" | awk '{print $2}'`
+v=`fslinfo $BIDS_DIR/${1}/func/${1}_task-main_bold.nii.gz | grep "^dim4" | awk '{print $2}'`
 
 volVox=1376256 # Number of voxels in a single volume
 
