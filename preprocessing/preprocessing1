@@ -8,6 +8,9 @@
 PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 BIDS_DIR=$PROJECT_DIR/BIDS
 
+module load freesurfer6.0.0
+module load fsl5.0.9
+
 for i in "sub-00006"
 
 do 
