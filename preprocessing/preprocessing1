@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # This script will run the first phase of preprocessing for the SRfMRI dataset. This will include
-# Reorientation of the structural image
+# Reorientation of the structural image.
 # Preparation of fieldmaps for topup.
 # After the script has been run bet will need to be run manually to skull strip struct.nii.gz and my_fmap_mag.nii.gz.
 
 PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 BIDS_DIR=$PROJECT_DIR/BIDS
 
-for i in "sub-001"
+for i in "sub-00006"
 
 do 
 

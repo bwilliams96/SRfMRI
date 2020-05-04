@@ -2,11 +2,13 @@
 
 # This script will run the second phase of preprocessing for the SRfMRI dataset. This will include
 # Feat preprocessing based on a file called "Feat_Preprocessing.fsf" in $PROJECT_DIR.
-# Segmentation in freesurfer
+# Segmentation in freesurfer.
 # Creation of anatomical masks in freesurfer and conversion from .mgz to .nii, and transformation to functional space 
-# Conversion of striatal masks from standard space to functional space
+# Conversion of striatal masks from standard space to functional space.
 # Extraction of timeseries from ROIs.
 # Before running this script it is assumed that bet has been run manually to skull strip struct.nii.gz and my_fmap_mag.nii.gz.
+
+PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 
 for i in "sub-001"
 
