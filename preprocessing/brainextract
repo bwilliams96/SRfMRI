@@ -16,8 +16,15 @@ betit () {
 module load fsl5.0.9
 
 file=$(basename -- "$1")
+extension="${file##*.}"
+if [ "$extension" == "gz" ]
+then
 extension="${file#*.}"
 filename="${file%%.*}"
+else
+extension="${file##*.}"
+filename="${file%.*}"
+fi
 path="${1%/*}"
 
 if [ "$file" != "$path" ]
