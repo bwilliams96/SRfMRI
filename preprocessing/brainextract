@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# This function will extract the brain for a nifti image using FSL BET and then display the extracted image in fsleyes.
+# It can be used to iterate over parameter permutations - a specific ID can be assigned to identify different permutations.
+
+# The function takes the following input parameters:
+# $1 - the nifti file to be skull stripped.
+# $2 - fractional intensity threshold, equal to -f in bet.
+# $3 - x dimension centre of gravity, equal to -c in bet.
+# $4 - y dimension centre of gravity, equal to -c in bet.
+# $5 - z dimension centre of gravity, equal to -c in bet.
+# $6 - vertical gradient in fractional intensity threshold, equal to -g in bet.
+# $7 - permutation id (if running the function multiple times at once)
+betit () {
+
+module load fsl5.0.9
+
+file=$(basename -- "$1")
+extension="${file#*.}"
+filename="${file%%.*}"
+path="${1%/*}"
+
+if [ "$file" != "$path" ]
+then
+echo input: $1 -f $2 -g $6 -c $3 $4 $5
+echo output: ${path}/${filename}_brain${7}.${extension}
+bet $1 ${path}/${filename}_brain${7}.${extension} -f $2 -g $6 -c $3 $4 $5
+fsleyes $1 ${path}/${filename}_brain${7}.${extension} &
+else
+echo input: $1 -f $2 -g $6 -c $3 $4 $5
+echo output: ${filename}_brain${7}.${extension}
+bet $1 ${filename}_brain${7}.${extension} -f $2 -g $6 -c $3 $4 $5
+fsleyes $1 ${filename}_brain${7}.${extension} &
+fi
+}
+
+"$@"
