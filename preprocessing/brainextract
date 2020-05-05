@@ -32,12 +32,12 @@ then
 echo input: $1 -f $2 -g $6 -c $3 $4 $5
 echo output: ${path}/${filename}_brain${7}.${extension}
 bet $1 ${path}/${filename}_brain${7}.${extension} -f $2 -g $6 -c $3 $4 $5
-fsleyes $1 ${path}/${filename}_brain${7}.${extension} &
+fsleyes $1 ${path}/${filename}_brain${7}.${extension} -cm Red-Yellow &
 else
 echo input: $1 -f $2 -g $6 -c $3 $4 $5
 echo output: ${filename}_brain${7}.${extension}
 bet $1 ${filename}_brain${7}.${extension} -f $2 -g $6 -c $3 $4 $5
-fsleyes $1 ${filename}_brain${7}.${extension} &
+fsleyes $1 ${filename}_brain${7}.${extension} -cm Red-Yellow &
 fi
 }
 
