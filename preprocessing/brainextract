@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Brendan Williams - May 2020
 # This function will extract the brain for a nifti image using FSL BET and then display the extracted image in fsleyes.
 # It can be used to iterate over parameter permutations - a specific ID can be assigned to identify different permutations.
 
@@ -12,8 +13,6 @@
 # $6 - vertical gradient in fractional intensity threshold, equal to -g in bet.
 # $7 - permutation id (if running the function multiple times at once)
 betit () {
-
-module load fsl5.0.9
 
 file=$(basename -- "$1")
 extension="${file##*.}"

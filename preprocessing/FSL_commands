@@ -78,7 +78,7 @@ do
 
 maskname="${mask%.*}"
 echo $maskname
-fslmeants -i $PROJECT_DIR/preprocessed/${1}/func/${1}_task-main_bold_mcf.nii.gz -m ${mask} -o $TS_DIR/${1}/${maskname}.txt
+fslmeants -i $PROJECT_DIR/preprocessed/${1}/func.feat/filtered_func_data.nii.gz -m ${mask} -o $TS_DIR/${1}/${maskname}.txt
 
 done
 
