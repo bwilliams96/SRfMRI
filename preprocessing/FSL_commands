@@ -153,7 +153,7 @@ echo ${v} volumes, creating file ${1}
 
 # Substitute values
 
-sed -e "s/sub-001/${1}/g" -e "s/1824915456/${nVox}/g" -e "s/1326/${v}/g" <${PROJECT_DIR}/Feat_Preprocessing.fsf> ${PROJECT_DIR}/Feat_Preprocessing_${1}.fsf
+sed -e "s/sub-001/${1}/g" -e "s/1824915456/${nVox}/g" -e "s/1326/${v}/g" -e"s/5.0.10/5.0/g" <${PROJECT_DIR}/Feat_Preprocessing.fsf> ${PROJECT_DIR}/Feat_Preprocessing_${1}.fsf
 
 echo starting Feat ${1}
 
