@@ -27,6 +27,8 @@ topup --imain=$PROJECT_DIR/preprocessed/${i}/fmap/my_b0s.nii.gz --datain=$PROJEC
 
 fslmaths $PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_iout.nii.gz -Tmean $PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_mag.nii.gz
 
+fslmaths $PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_fout.nii.gz -mul 6.2832 $PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_fout_radians.nii.gz # convert fieldmap from Hz to radians
+
 rm $PROJECT_DIR/acquisition_parameters_temp.txt
 
 echo finished ${i}
