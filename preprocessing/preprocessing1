@@ -5,17 +5,19 @@
 # Preparation of fieldmaps for topup.
 # After the script has been run bet will need to be run manually to skull strip struct.nii.gz and my_fmap_mag.nii.gz.
 
+preprocessing1 () {
+
 PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 BIDS_DIR=$PROJECT_DIR/BIDS
 
 module load freesurfer6.0.0
 module load fsl5.0.9
 
-for i in "sub-00006"
+for i in "$@"
 
 do 
 
-mkdir -p $PROJECT_DIR/preprocessed/${i}/{anat,fmap,func,timing_files}
+mkdir -p $PROJECT_DIR/preprocessed/${i}/{anat,fmap,func,FEAT_output}
 
 fslreorient2std $BIDS_DIR/${i}/anat/${i}_rec-NORM_T1w.nii.gz $PROJECT_DIR/preprocessed/${i}/anat/struct.nii.gz
 
@@ -34,3 +36,7 @@ rm $PROJECT_DIR/acquisition_parameters_temp.txt
 echo finished ${i}
 
 done 
+
+}
+
+"$@"
