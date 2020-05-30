@@ -41,11 +41,12 @@ mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MA
 mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MASK_DIR/${i}/anat/Left-MDm.mgz --match 8113
 mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MASK_DIR/${i}/anat/Right-MDl.mgz --match 8212
 mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $MASK_DIR/${i}/anat/Right-MDm.mgz --match 8213
-mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg.mgz --o $MASK_DIR/${i}/anat/Right-mOFC.mgz --match 12164
-mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg.mgz --o $MASK_DIR/${i}/anat/Right-lOFC.mgz --match 12165
-mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg.mgz --o $MASK_DIR/${i}/anat/Left-mOFC.mgz --match 11164
-mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg.mgz --o $MASK_DIR/${i}/anat/Left-lOFC.mgz --match 11165
+mri_binarize --i $FS_DIR/${i}/mri/aparc+aseg.mgz --o $MASK_DIR/${i}/anat/Right-mOFC.mgz --match 2014
+mri_binarize --i $FS_DIR/${i}/mri/aparc+aseg.mgz --o $MASK_DIR/${i}/anat/Right-lOFC.mgz --match 2012
+mri_binarize --i $FS_DIR/${i}/mri/aparc+aseg.mgz --o $MASK_DIR/${i}/anat/Left-mOFC.mgz --match 1014
+mri_binarize --i $FS_DIR/${i}/mri/aparc+aseg.mgz --o $MASK_DIR/${i}/anat/Left-lOFC.mgz --match 1012
 
+# Convert masks from .mgz to nifti file type and change dimensions and orientations to match highres.nii
 echo converting ${i} masks to nifti
 
 cd $MASK_DIR/${i}/anat
@@ -56,9 +57,9 @@ do
 
 filename="${f%.*}"
 
-d1=`fslinfo $FEAT_DIR/${i}/func.feat/reg/highres.nii.gz | grep "^dim1" | awk '{print $2}'`
-d2=`fslinfo $FEAT_DIR/${i}/func.feat/reg/highres.nii.gz | grep "^dim3" | awk '{print $2}'`
-d3=`fslinfo $FEAT_DIR/${i}/func.feat/reg/highres.nii.gz | grep "^dim2" | awk '{print $2}'`
+d1=`fslinfo $FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres.nii.gz | grep "^dim1" | awk '{print $2}'`
+d2=`fslinfo $FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres.nii.gz | grep "^dim3" | awk '{print $2}'`
+d3=`fslinfo $FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres.nii.gz | grep "^dim2" | awk '{print $2}'`
 
 mri_convert --in_type mgz --out_type nii $MASK_DIR/${i}/anat/${f} $MASK_DIR/${i}/anat_resampled_unswapped/${filename}.nii.gz --cropsize ${d1} ${d2} ${d3}
 
@@ -66,7 +67,11 @@ fslswapdim $MASK_DIR/${i}/anat_resampled_unswapped/${filename}.nii.gz x PA IS $M
 
 done
 
+# Create highres2example_func_warp and apply to anatomical space masks to convert to functional space
+
 echo applying ${i} warp
+
+invwarp --ref=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres.nii.gz --warp=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/example_func2highres_warp.nii.gz --out=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres2example_func_warp.nii.gz
 
 cd $MASK_DIR/${i}/anat_resampled
 
@@ -76,7 +81,7 @@ do
 
 filename="${f%%.*}"
 
-flirt -in ${f} -ref $FEAT_DIR/${i}/func.feat/reg/example_func -out $MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz -init $FEAT_DIR/${i}/func.feat/reg/highres2example_func.mat -applyxfm
+applywarp --ref=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/example_func --in=${f} --warp=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres2example_func_warp.nii.gz --out=$MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz
 
 fslmaths $MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz -thr $BIN_THR -bin $MASK_DIR/${i}/func_binarised/${filename}_func_binary${BIN_THR}.nii.gz
 

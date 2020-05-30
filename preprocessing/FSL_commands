@@ -78,7 +78,7 @@ do
 
 maskname="${mask%.*}"
 echo $maskname
-fslmeants -i $PROJECT_DIR/preprocessed/${1}/func.feat/filtered_func_data.nii.gz -m ${mask} -o $TS_DIR/${1}/${maskname}.txt
+fslmeants -i $PROJECT_DIR/preprocessed/${1}/FEAT_output/preprocessing.feat/filtered_func_data.nii.gz -m ${mask} -o $TS_DIR/${1}/${maskname}.txt
 
 done
 
@@ -95,7 +95,7 @@ BIN_THR=0.3
 
 cd $MASK_DIR/
 
-for ii in $1
+for ii in "$1"
 
 do 
 
@@ -153,7 +153,7 @@ echo ${v} volumes, creating file ${1}
 
 # Substitute values
 
-sed -e "s/sub-001/${1}/g" -e "s/1824915456/${nVox}/g" -e "s/1326/${v}/g" -e"s/5.0.10/5.0/g" <${PROJECT_DIR}/Feat_Preprocessing.fsf> ${PROJECT_DIR}/Feat_Preprocessing_${1}.fsf
+sed -e "s/sub-001/${1}/g" -e "s/1824915456/${nVox}/g" -e "s/1326/${v}/g" -e"s/5.0.10/5.0/g" <${PROJECT_DIR}/FEAT_setup/Preprocessing/Feat_Preprocessing_new.fsf> ${PROJECT_DIR}/Feat_Preprocessing_${1}.fsf
 
 echo starting Feat ${1}
 
@@ -173,9 +173,12 @@ FEAT_DIR=$PROJECT_DIR/preprocessed
 MASK_DIR=$PROJECT_DIR/masks
 BIN_THR=0.3
 
+invwarp --ref=$FEAT_DIR/${1}/FEAT_output/preprocessing.feat/reg/standard.nii.gz --warp=$FEAT_DIR/${1}/FEAT_output/preprocessing.feat/reg/example_func2standard_warp.nii.gz --out=$FEAT_DIR/${1}/FEAT_output/preprocessing.feat/reg/standard2example_func_warp.nii.gz
+
 for i in "AC_DC_VC_L" "AC_DC_VC_R"
 do
-flirt -in $MASK_DIR/CHOI_STR_MNI/${i}.nii.gz -ref $FEAT_DIR/${1}/func.feat/reg/example_func -out $MASK_DIR/${1}/func/${i}_func.nii.gz -init $FEAT_DIR/${1}/func.feat/reg/standard2example_func.mat -applyxfm
+
+applywarp --ref=$FEAT_DIR/${1}/FEAT_output/preprocessing.feat/reg/example_func --in=$MASK_DIR/CHOI_STR_MNI/${i}.nii.gz --warp=$FEAT_DIR/${1}/FEAT_output/preprocessing.feat/reg/standard2example_func_warp.nii.gz --out=$MASK_DIR/${1}/func/${i}_func.nii.gz
 
 fslmaths $MASK_DIR/${1}/func/${i}_func.nii.gz -thr $BIN_THR -bin $MASK_DIR/${1}/func_binarised/${i}_func_binary${BIN_THR}.nii.gz
 done
