@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# This script will run first level PPI analysis for the SRfMRI dataset
+
+PPI () {
+
+PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
+BIDS_DIR=$PROJECT_DIR/BIDS
+
+module load fsl5.0.9
+
+for i in "$@"
+
+do 
+
+for mask in "Left-CMPf_func_binary0.3" "Left-MD_func_binary0.3" "Right-CMPf_func_binary0.3" "Right-MD_func_binary0.3" 
+
+do
+
+if [ -d "$PROJECT_DIR/preprocessed/${i}/FEAT_output/${mask}.feat" ] 
+then
+
+v=`fslinfo $BIDS_DIR/${i}/func/${i}_task-main_bold.nii.gz | grep "^dim4" | awk '{print $2}'`
+
+volVox=1376256 # Number of voxels in a single volume
+
+let nVox=volVox*v # Total number of voxels for acqusition
+
+sed -e "s/sub-003/${i}/g" -e "s/1813905408/${nVox}/g" -e "s/1318/${v}/g" -e"s/Left-CMPf_func_binary0.3.feat/${mask}.feat/g" -e"s/Left-CMPf_func_binary0.3/${mask}/g" <${PROJECT_DIR}/FEAT_setup/PPI/Feat_PPI.fsf> ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
+
+feat ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
+
+rm ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
+
+else
+
+cp -avr $PROJECT_DIR/preprocessed/${i}/FEAT_output/preprocessing.feat $PROJECT_DIR/preprocessed/${i}/FEAT_output/${mask}.feat
+
+v=`fslinfo $BIDS_DIR/${i}/func/${i}_task-main_bold.nii.gz | grep "^dim4" | awk '{print $2}'`
+
+volVox=1376256 # Number of voxels in a single volume
+
+let nVox=volVox*v # Total number of voxels for acqusition
+
+sed -e "s/sub-003/${i}/g" -e "s/1813905408/${nVox}/g" -e "s/1318/${v}/g" -e"s/Left-CMPf_func_binary0.3.feat/${mask}.feat/g" -e"s/Left-CMPf_func_binary0.3/${mask}/g" <${PROJECT_DIR}/FEAT_setup/PPI/Feat_PPI.fsf> ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
+
+feat ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
+
+rm ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
+
+fi
+
+done
+
+done 
+
+}
+
+"$@"
