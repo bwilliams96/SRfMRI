@@ -19,9 +19,9 @@ for i in "$@"
 
 do 
 
-bash $PROJECT_DIR/analysis_scripts/preprocessing/FSL_commands featrun $i
+# bash $PROJECT_DIR/analysis_scripts/preprocessing/FSL_commands featrun $i
 
-bash $PROJECT_DIR/analysis_scripts/preprocessing/FS_commands letsSurf $i
+# bash $PROJECT_DIR/analysis_scripts/preprocessing/FS_commands letsSurf $i
 
 bash $PROJECT_DIR/analysis_scripts/preprocessing/FS_commands makemask $i
 

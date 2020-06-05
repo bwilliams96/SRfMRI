@@ -13,7 +13,7 @@ for i in "$@"
 
 do 
 
-for mask in "Left-CMPf_func_binary0.3" "Left-MD_func_binary0.3" "Right-CMPf_func_binary0.3" "Right-MD_func_binary0.3" 
+for mask in "Left-CMPf_func_binary0.4" "Left-MD_func_binary0.4" "Right-CMPf_func_binary0.4" "Right-MD_func_binary0.4" "Left-lOFC_func_binary0.4" "Left-mOFC_func_binary0.4" "Right-lOFC_func_binary0.4" "Right-mOFC_func_binary0.4"
 
 do
 
@@ -34,7 +34,7 @@ rm ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
 
 else
 
-cp -avr $PROJECT_DIR/preprocessed/${i}/FEAT_output/preprocessing.feat $PROJECT_DIR/preprocessed/${i}/FEAT_output/${mask}.feat
+cp -a $PROJECT_DIR/preprocessed/${i}/FEAT_output/preprocessing.feat $PROJECT_DIR/preprocessed/${i}/FEAT_output/${mask}.feat
 
 v=`fslinfo $BIDS_DIR/${i}/func/${i}_task-main_bold.nii.gz | grep "^dim4" | awk '{print $2}'`
 

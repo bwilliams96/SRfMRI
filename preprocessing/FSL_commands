@@ -8,7 +8,7 @@ PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 FS_DIR=$PROJECT_DIR/Freesurfer
 FEAT_DIR=$PROJECT_DIR/preprocessed
 MASK_DIR=$PROJECT_DIR/masks
-BIN_THR=0.5 #Threshold for fslmaths binarisation
+BIN_THR=0.4 #Threshold for fslmaths binarisation
 
 for i in "$1"
 
@@ -16,13 +16,7 @@ do
 
 echo Creating ${i} masks
 
-# Create highres2example_func_warp and apply to anatomical space masks to convert to functional space
-
-echo applying ${i} warp
-
-invwarp --ref=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres.nii.gz --warp=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/example_func2highres_warp.nii.gz --out=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres2example_func_warp.nii.gz
-
-cd $MASK_DIR/${i}/anat_resampled
+cd $MASK_DIR/${i}/func
 
 for f in *
 
@@ -30,9 +24,7 @@ do
 
 filename="${f%%.*}"
 
-applywarp --ref=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/example_func --in=${f} --warp=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres2example_func_warp.nii.gz --out=$MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz
-
-fslmaths $MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz -thr $BIN_THR -bin $MASK_DIR/${i}/func_binarised/${filename}_func_binary${BIN_THR}.nii.gz
+fslmaths $MASK_DIR/${i}/func/${f} -thr $BIN_THR -bin $MASK_DIR/${i}/func_binarised/${filename}_func_binary${BIN_THR}.nii.gz
 
 done
 
@@ -130,7 +122,7 @@ done
 mergemask () {
 PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 MASK_DIR=$PROJECT_DIR/masks
-BIN_THR=0.3
+BIN_THR=0.4
 
 cd $MASK_DIR/
 
@@ -143,11 +135,11 @@ cd ${MASK_DIR}/${ii}/func_binarised
 
 fslmaths Left-CM_func_binary${BIN_THR}.nii.gz -add Left-Pf_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Left-CMPf_func_binary${BIN_THR}.nii.gz
 
-fslmaths $MASK_DIR/${ii}/Analysis/Left-CMPf_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Left-CMPf_func_binary${BIN_THR}.nii.gz
+fslmaths $MASK_DIR/${ii}/Analysis/Left-CMPf_func_binary${BIN_THR}.nii.gz -thr 0.5 -bin $MASK_DIR/${ii}/Analysis/Left-CMPf_func_binary${BIN_THR}.nii.gz
 
 fslmaths Left-MDl_func_binary${BIN_THR}.nii.gz -add Left-MDm_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Left-MD_func_binary${BIN_THR}.nii.gz
 
-fslmaths $MASK_DIR/${ii}/Analysis/Left-MD_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Left-MD_func_binary${BIN_THR}.nii.gz
+fslmaths $MASK_DIR/${ii}/Analysis/Left-MD_func_binary${BIN_THR}.nii.gz -thr 0.5 -bin $MASK_DIR/${ii}/Analysis/Left-MD_func_binary${BIN_THR}.nii.gz
 
 cp Left-lOFC_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Left-lOFC_func_binary${BIN_THR}.nii.gz
 
@@ -157,11 +149,11 @@ cp AC_DC_VC_L_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/AC_DC_VC_L_f
 
 fslmaths Right-CM_func_binary${BIN_THR}.nii.gz -add Right-Pf_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-CMPf_func_binary${BIN_THR}.nii.gz
 
-fslmaths $MASK_DIR/${ii}/Analysis/Right-CMPf_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Right-CMPf_func_binary${BIN_THR}.nii.gz
+fslmaths $MASK_DIR/${ii}/Analysis/Right-CMPf_func_binary${BIN_THR}.nii.gz -thr 0.5 -bin $MASK_DIR/${ii}/Analysis/Right-CMPf_func_binary${BIN_THR}.nii.gz
 
 fslmaths Right-MDl_func_binary${BIN_THR}.nii.gz -add Right-MDm_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-MD_func_binary${BIN_THR}.nii.gz
 
-fslmaths $MASK_DIR/${ii}/Analysis/Right-MD_func_binary${BIN_THR}.nii.gz -thr 0.5 $MASK_DIR/${ii}/Analysis/Right-MD_func_binary${BIN_THR}.nii.gz
+fslmaths $MASK_DIR/${ii}/Analysis/Right-MD_func_binary${BIN_THR}.nii.gz -thr 0.5 -bin $MASK_DIR/${ii}/Analysis/Right-MD_func_binary${BIN_THR}.nii.gz
 
 cp Right-lOFC_func_binary${BIN_THR}.nii.gz $MASK_DIR/${ii}/Analysis/Right-lOFC_func_binary${BIN_THR}.nii.gz
 
@@ -210,7 +202,7 @@ strmask () {
 PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 FEAT_DIR=$PROJECT_DIR/preprocessed
 MASK_DIR=$PROJECT_DIR/masks
-BIN_THR=0.3
+BIN_THR=0.4
 
 invwarp --ref=$FEAT_DIR/${1}/FEAT_output/preprocessing.feat/reg/standard.nii.gz --warp=$FEAT_DIR/${1}/FEAT_output/preprocessing.feat/reg/example_func2standard_warp.nii.gz --out=$FEAT_DIR/${1}/FEAT_output/preprocessing.feat/reg/standard2example_func_warp.nii.gz
 

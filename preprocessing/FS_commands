@@ -22,7 +22,7 @@ PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 FS_DIR=$PROJECT_DIR/Freesurfer
 FEAT_DIR=$PROJECT_DIR/preprocessed
 MASK_DIR=$PROJECT_DIR/masks
-BIN_THR=0.5 #Threshold for fslmaths binarisation
+BIN_THR=0.4 #Threshold for fslmaths binarisation
 
 for i in "$1"
 
