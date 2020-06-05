@@ -1,5 +1,44 @@
 #!/bin/bash
 
+# Brendan Williams - June 2020
+# This script will convert anatomical masks created using freesurfer in nifti file format to functional space masks with a predetermined threshold
+
+rethrmask () {
+PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
+FS_DIR=$PROJECT_DIR/Freesurfer
+FEAT_DIR=$PROJECT_DIR/preprocessed
+MASK_DIR=$PROJECT_DIR/masks
+BIN_THR=0.5 #Threshold for fslmaths binarisation
+
+for i in "$1"
+
+do 
+
+echo Creating ${i} masks
+
+# Create highres2example_func_warp and apply to anatomical space masks to convert to functional space
+
+echo applying ${i} warp
+
+invwarp --ref=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres.nii.gz --warp=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/example_func2highres_warp.nii.gz --out=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres2example_func_warp.nii.gz
+
+cd $MASK_DIR/${i}/anat_resampled
+
+for f in *
+
+do
+
+filename="${f%%.*}"
+
+applywarp --ref=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/example_func --in=${f} --warp=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres2example_func_warp.nii.gz --out=$MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz
+
+fslmaths $MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz -thr $BIN_THR -bin $MASK_DIR/${i}/func_binarised/${filename}_func_binary${BIN_THR}.nii.gz
+
+done
+
+done 
+}
+
 # Brendan Williams - April 2020
 # This script will create fieldmaps using topup in fsl. The phase encoding directions for the fieldmap's json file will be parsed to correctly set the parameters for an acqusition parameter file that will be created and used by the script for topup.
 
