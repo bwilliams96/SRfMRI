@@ -26,7 +26,7 @@ volVox=1376256 # Number of voxels in a single volume
 
 let nVox=volVox*v # Total number of voxels for acqusition
 
-sed -e "s/sub-003/${i}/g" -e "s/1813905408/${nVox}/g" -e "s/1318/${v}/g" -e"s/Left-CMPf_func_binary0.3.feat/${mask}.feat/g" -e"s/Left-CMPf_func_binary0.3/${mask}/g" <${PROJECT_DIR}/FEAT_setup/PPI/Feat_PPI.fsf> ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
+sed -e "s/sub-003/${i}/g" -e "s/1813905408/${nVox}/g" -e "s/1318/${v}/g" -e"s/Left-CMPf_func_binary0.4.feat/${mask}.feat/g" -e"s/Left-CMPf_func_binary0.4/${mask}/g" <${PROJECT_DIR}/FEAT_setup/PPI/Feat_PPI.fsf> ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
 
 feat ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
 
@@ -42,7 +42,7 @@ volVox=1376256 # Number of voxels in a single volume
 
 let nVox=volVox*v # Total number of voxels for acqusition
 
-sed -e "s/sub-003/${i}/g" -e "s/1813905408/${nVox}/g" -e "s/1318/${v}/g" -e"s/Left-CMPf_func_binary0.3.feat/${mask}.feat/g" -e"s/Left-CMPf_func_binary0.3/${mask}/g" <${PROJECT_DIR}/FEAT_setup/PPI/Feat_PPI.fsf> ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
+sed -e "s/sub-003/${i}/g" -e "s/1813905408/${nVox}/g" -e "s/1318/${v}/g" -e"s/Left-CMPf_func_binary0.4.feat/${mask}.feat/g" -e"s/Left-CMPf_func_binary0.4/${mask}/g" <${PROJECT_DIR}/FEAT_setup/PPI/Feat_PPI.fsf> ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
 
 feat ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
 
