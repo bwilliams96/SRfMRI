@@ -1,2 +1,3 @@
 *.DS_Store
 Debug/
+.ipynb_checkpoints
