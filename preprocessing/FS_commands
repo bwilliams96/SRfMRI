@@ -18,11 +18,12 @@ echo $1 thalamic segmentation finished
 #to get ID codes for other regions, see /usr/local/freesurfer/FreeSurferColorLUT.txt
 
 makemask () {
+SUBJECTS_DIR=/storage/gold/cinn/2019/SRfMRI/Freesurfer
 PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 FS_DIR=$PROJECT_DIR/Freesurfer
 FEAT_DIR=$PROJECT_DIR/preprocessed
 MASK_DIR=$PROJECT_DIR/masks
-BIN_THR=0.4 #Threshold for fslmaths binarisation
+BIN_THR=0.35 #Threshold for fslmaths binarisation
 
 for i in "$1"
 
@@ -35,7 +36,7 @@ mkdir -p $MASK_DIR/${i}/{anat,anat-nii,func,func_binarised}
 # Convert segmentations back to native dimensions
 mri_label2vol --seg $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --temp $FS_DIR/${i}/mri/rawavg.mgz --regheader $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1.FSvoxelSpace.mgz --o $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1-anat.mgz
 
-mri_label2vol --seg $FS_DIR/${i}/mri/aparc+aseg.mgz --temp $FS_DIR/${i}/mri/rawavg.mgz --regheader $FS_DIR/${i}/mri/aparc+aseg.mgz --o $FS_DIR/${i}/mri/aparc+aseg-anat.mgz
+mri_label2vol --seg $FS_DIR/${i}/mri/aparc.a2009s+aseg.mgz --temp $FS_DIR/${i}/mri/rawavg.mgz --regheader $FS_DIR/${i}/mri/aparc.a2009s+aseg.mgz --o $FS_DIR/${i}/mri/aparc.a2009s+aseg-anat.mgz
 
 # Extract masks from freesurfer segmentation
 mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1-anat.mgz --o $MASK_DIR/${i}/anat/Left-CM.mgz --match 8106
@@ -46,10 +47,10 @@ mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1-anat.mgz --o $MASK_DIR/$
 mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1-anat.mgz --o $MASK_DIR/${i}/anat/Left-MDm.mgz --match 8113
 mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1-anat.mgz --o $MASK_DIR/${i}/anat/Right-MDl.mgz --match 8212
 mri_binarize --i $FS_DIR/${i}/mri/ThalamicNuclei.v10.T1-anat.mgz --o $MASK_DIR/${i}/anat/Right-MDm.mgz --match 8213
-mri_binarize --i $FS_DIR/${i}/mri/aparc+aseg-anat.mgz --o $MASK_DIR/${i}/anat/Right-mOFC.mgz --match 2014
-mri_binarize --i $FS_DIR/${i}/mri/aparc+aseg-anat.mgz --o $MASK_DIR/${i}/anat/Right-lOFC.mgz --match 2012
-mri_binarize --i $FS_DIR/${i}/mri/aparc+aseg-anat.mgz --o $MASK_DIR/${i}/anat/Left-mOFC.mgz --match 1014
-mri_binarize --i $FS_DIR/${i}/mri/aparc+aseg-anat.mgz --o $MASK_DIR/${i}/anat/Left-lOFC.mgz --match 1012
+mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg-anat.mgz --o $MASK_DIR/${i}/anat/Right-mOFC.mgz --match 12164
+mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg-anat.mgz --o $MASK_DIR/${i}/anat/Right-lOFC.mgz --match 12165
+mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg-anat.mgz --o $MASK_DIR/${i}/anat/Left-mOFC.mgz --match 11164
+mri_binarize --i $FS_DIR/${i}/mri/aparc.a2009s+aseg-anat.mgz --o $MASK_DIR/${i}/anat/Left-lOFC.mgz --match 11165
 
 # Convert masks from .mgz to nifti file type and change dimensions and orientations to match highres.nii
 echo converting ${i} masks to nifti

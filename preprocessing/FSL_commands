@@ -8,7 +8,7 @@ PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 FS_DIR=$PROJECT_DIR/Freesurfer
 FEAT_DIR=$PROJECT_DIR/preprocessed
 MASK_DIR=$PROJECT_DIR/masks
-BIN_THR=0.4 #Threshold for fslmaths binarisation
+BIN_THR=0.45 #Threshold for fslmaths binarisation
 
 for i in "$1"
 
@@ -22,9 +22,9 @@ for f in *
 
 do
 
-filename="${f%%.*}"
+filename=${f%nonbinary.nii.gz}
 
-fslmaths $MASK_DIR/${i}/func/${f} -thr $BIN_THR -bin $MASK_DIR/${i}/func_binarised/${filename}_func_binary${BIN_THR}.nii.gz
+fslmaths $MASK_DIR/${i}/func/${f} -thr $BIN_THR -bin $MASK_DIR/${i}/func_binarised/${filename}binary${BIN_THR}.nii.gz
 
 done
 
@@ -122,7 +122,7 @@ done
 mergemask () {
 PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 MASK_DIR=$PROJECT_DIR/masks
-BIN_THR=0.4
+BIN_THR=0.35
 
 cd $MASK_DIR/
 
