@@ -2,6 +2,8 @@ import sys
 import os
 import pandas as pd
 import numpy as np
+import glob
+import shutil
 
 subject = sys.argv[1]
 
@@ -36,7 +38,7 @@ def timing_epoch(subject,epoch,start,end,filename,conditional=None,value=None,sh
         output['strength'] = 1                
         
     #Create output file
-    output_filename = f"/storage/gold/cinn/2019/SRfMRI/BIDS/{subject}/func/{subject}_{filename}_events.tsv"
+    output_filename = f"/storage/gold/cinn/2019/SRfMRI/BIDS/{subject}/func/{subject}_{filename}.tsv"
     
     with open(output_filename,'w') as write_tsv:
         write_tsv.write(output.to_csv(sep='\t',index=False,header=False)) 
@@ -55,7 +57,7 @@ def PPI_epoch(subject,epoch,start,end,filename):
     output['strength'] = dataPPI['Strength']              
         
     #Create output file
-    output_filename = f"/storage/gold/cinn/2019/SRfMRI/BIDS/{subject}/func/{subject}_{filename}_events.tsv"
+    output_filename = f"/storage/gold/cinn/2019/SRfMRI/BIDS/{subject}/func/{subject}_{filename}.tsv"
     
     with open(output_filename,'w') as write_tsv:
         write_tsv.write(output.to_csv(sep='\t',index=False,header=False))
@@ -63,7 +65,7 @@ def PPI_epoch(subject,epoch,start,end,filename):
     outputPlus = output
     outputPlus.loc[outputPlus['strength'] == -1, 'strength'] = 1
     
-    output_Plus = f"/storage/gold/cinn/2019/SRfMRI/BIDS/{subject}/func/{subject}_{filename}-plus_events.tsv"
+    output_Plus = f"/storage/gold/cinn/2019/SRfMRI/BIDS/{subject}/func/{subject}_{filename}_plus.tsv"
     
     with open(output_Plus,'w') as write_tsv_plus:
         write_tsv_plus.write(outputPlus.to_csv(sep='\t',index=False,header=False))
