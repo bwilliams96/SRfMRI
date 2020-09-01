@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# This script will run first level PPI analysis for the SRfMRI dataset
+
+AFNI () {
+
+PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
+BIDS_DIR=$PROJECT_DIR/BIDS
+AFNI_DIR=$PROJECT_DIR/AFNI
+
+module load afni19.3.03
+
+for i in "$@"
+
+do 
+
+[[ -d "$PROJECT_DIR/AFNI/${i}" ]] || mkdir "$PROJECT_DIR/AFNI/${i}"
+
+cp -n $BIDS_DIR/$i/anat/${i}_rec-NORM_T1w.nii.gz $AFNI_DIR/$i/${i}_T1w.nii.gz
+cp -n $BIDS_DIR/$i/func/${i}_task-main_bold.nii.gz $AFNI_DIR/$i/${i}_func.nii.gz
+
+cat $PROJECT_DIR/preprocessed/$i/timing_files/PPI/${i}_IL.tsv $PROJECT_DIR/preprocessed/$i/timing_files/PPI/${i}_Fb_plus.tsv > $AFNI_DIR/$i/${i}_Feedback.tsv
+cp $PROJECT_DIR/preprocessed/$i/timing_files/PPI/${i}_Ant.tsv $AFNI_DIR/$i/${i}_Ant.tsv
+cp $PROJECT_DIR/preprocessed/$i/timing_files/PPI/${i}_DM.tsv $AFNI_DIR/$i/${i}_DM.tsv
+cp $PROJECT_DIR/preprocessed/$i/timing_files/PPI/${i}_Tot.tsv $AFNI_DIR/$i/${i}_Tot.tsv
+
+cd $AFNI_DIR/$i
+
+timing_tool.py -fsl_timing_files ${i}_Feedback.tsv -write_timing ${i}_Feedback.1D
+timing_tool.py -fsl_timing_files ${i}_Ant.tsv -write_timing ${i}_Ant.1D
+timing_tool.py -fsl_timing_files ${i}_DM.tsv -write_timing ${i}_DM.1D
+timing_tool.py -fsl_timing_files ${i}_Tot.tsv -write_timing ${i}_Tot.1D
+
+1dMarry -divorce ${i}_Feedback.1D
+1dMarry -divorce ${i}_Ant.1D
+1dMarry -divorce ${i}_DM.1D
+1dMarry -divorce ${i}_Tot.1D
+
+rm *.tsv *B.1D ${i}_Feedback.1D ${i}_Ant.1D ${i}_DM.1D ${i}_Tot.1D
+mv ${i}_Feedback.1D_A.1D ${i}_Feedback.1D
+mv ${i}_Ant.1D_A.1D ${i}_Ant.1D
+mv ${i}_DM.1D_A.1D ${i}_DM.1D
+mv ${i}_Tot.1D_A.1D ${i}_Tot.1D
+
+afniId=${i/${i:3:1}}
+
+mkdir -p $AFNI_DIR/$i/subject_results/group.SR/subj.$afniId/
+
+sed -e "s/sub-001/$i/g" -e "s/sub001/$afniId/g" <$AFNI_DIR/cmd.ap.template> $AFNI_DIR/$i/subject_results/group.SR/subj.$afniId/cmd.ap.$afniId
+done 
+
+chmod u+x ./subject_results/group.SR/subj.$afniId/cmd.ap.$afniId
+./subject_results/group.SR/subj.$afniId/cmd.ap.$afniId
+
+#mv $AFNI_DIR/$i/proc.$afniId $AFNI_DIR/$i/subject_results/group.SR/subj.$afniId/proc.$afniId
+
+#cd ./subject_results/group.SR/subj.$afniId/
+
+tcsh -xef proc.$afniId 2>&1 | tee output.proc.$afniId
+
+}
+
+"$@"
