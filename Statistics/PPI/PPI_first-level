@@ -13,7 +13,7 @@ for i in "$@"
 
 do 
 
-for mask in "Left-CMPf_func_binary0.35" "Right-CMPf_func_binary0.35" # "Left-MD_func_binary0.35" "Right-MD_func_binary0.35" "Left-lOFC_func_binary0.35" "Left-mOFC_func_binary0.35" "Right-lOFC_func_binary0.35" "Right-mOFC_func_binary0.35"
+for mask in "Left-MD_func_binary0.35" "Right-MD_func_binary0.35" "Left-lOFC_func_binary0.35" "Left-mOFC_func_binary0.35" "Right-lOFC_func_binary0.35" "Right-mOFC_func_binary0.35" # "Left-CMPf_func_binary0.35" "Right-CMPf_func_binary0.35"
 
 do
 
@@ -30,7 +30,7 @@ sed -e "s/sub-003/${i}/g" -e "s/1813905408/${nVox}/g" -e "s/1318/${v}/g" -e"s/pr
 
 feat ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
 
-rm ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
+#rm ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
 
 else
 
@@ -46,7 +46,7 @@ sed -e "s/sub-003/${i}/g" -e "s/1813905408/${nVox}/g" -e "s/1318/${v}/g" -e"s/pr
 
 feat ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
 
-rm ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
+#rm ${PROJECT_DIR}/Feat_PPI_${i}_${mask}.fsf
 
 fi
 

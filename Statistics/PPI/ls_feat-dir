@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# This script will print the paths to the feat directories from a first level PPI analysis for the SRfMRI dataset to the terminal for a group analysis 
+
+ls_feat-dir () {
+
+PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
+BIDS_DIR=$PROJECT_DIR/BIDS
+
+for i in "$@"
+
+do 
+
+for ppt in "sub-001" "sub-002" "sub-003" "sub-004" "sub-005" "sub-00006" 
+
+do
+
+ls -d $PROJECT_DIR/preprocessed/$ppt/FEAT_output/$i*
+
+done
+
+done 
+
+}
+
+"$@"
