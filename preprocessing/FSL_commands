@@ -8,7 +8,7 @@ PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 FS_DIR=$PROJECT_DIR/Freesurfer
 FEAT_DIR=$PROJECT_DIR/preprocessed
 MASK_DIR=$PROJECT_DIR/masks
-BIN_THR=0.45 #Threshold for fslmaths binarisation
+BIN_THR=0.35 #Threshold for fslmaths binarisation
 
 for i in "$1"
 
@@ -202,7 +202,7 @@ strmask () {
 PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 FEAT_DIR=$PROJECT_DIR/preprocessed
 MASK_DIR=$PROJECT_DIR/masks
-BIN_THR=0.4
+BIN_THR=0.35
 
 invwarp --ref=$FEAT_DIR/${1}/FEAT_output/preprocessing.feat/reg/standard.nii.gz --warp=$FEAT_DIR/${1}/FEAT_output/preprocessing.feat/reg/example_func2standard_warp.nii.gz --out=$FEAT_DIR/${1}/FEAT_output/preprocessing.feat/reg/standard2example_func_warp.nii.gz
 
