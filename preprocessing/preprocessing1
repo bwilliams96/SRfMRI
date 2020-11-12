@@ -10,8 +10,8 @@ preprocessing1 () {
 PROJECT_DIR=/storage/gold/cinn/2019/SRfMRI
 BIDS_DIR=$PROJECT_DIR/BIDS
 
-module load freesurfer6.0.0
-module load fsl5.0.9
+source /home/users/cz005866/.bashrc
+export SUBJECTS_DIR=/storage/gold/cinn/2019/SRfMRI/Freesurfer
 
 for i in "$@"
 
@@ -25,13 +25,13 @@ bash $PROJECT_DIR/analysis_scripts/preprocessing/FSL_commands preptopup $i
 
 echo topup ${i}
 
-topup --imain=$PROJECT_DIR/preprocessed/${i}/fmap/my_b0s.nii.gz --datain=$PROJECT_DIR/acquisition_parameters_temp.txt --config=b02b0.cnf --fout=$PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_fout --iout=$PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_iout
+topup --imain=$PROJECT_DIR/preprocessed/${i}/fmap/my_b0s.nii.gz --datain=$PROJECT_DIR/acquisition_parameters_temp_$1.txt --config=/storage/gold/cinn/2019/SRfMRI/analysis_scripts/preprocessing/b02b0.cnf --fout=$PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_fout --iout=$PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_iout
 
 fslmaths $PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_iout.nii.gz -Tmean $PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_mag.nii.gz
 
 fslmaths $PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_fout.nii.gz -mul 6.2832 $PROJECT_DIR/preprocessed/${i}/fmap/my_fmap_fout_radians.nii.gz # convert fieldmap from Hz to radians
 
-rm $PROJECT_DIR/acquisition_parameters_temp.txt
+rm $PROJECT_DIR/acquisition_parameters_temp_$1.txt
 
 echo finished ${i}
 
