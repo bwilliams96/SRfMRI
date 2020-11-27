@@ -21,6 +21,8 @@ mkdir -p $PROJECT_DIR/preprocessed/${i}/{anat,fmap,func,FEAT_output}
 
 fslreorient2std $BIDS_DIR/${i}/anat/${i}_rec-NORM_T1w.nii.gz $PROJECT_DIR/preprocessed/${i}/anat/struct.nii.gz
 
+source /home/users/cz005866/.bashrc
+
 bash $PROJECT_DIR/analysis_scripts/preprocessing/FSL_commands preptopup $i
 
 echo topup ${i}

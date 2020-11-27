@@ -71,7 +71,7 @@ done
 
 echo applying ${i} warp
 
-invwarp --ref=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres.nii.gz --warp=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/example_func2highres_warp.nii.gz --out=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres2example_func_warp.nii.gz
+invwarp --ref=$FEAT_DIR/${i}/FEAT_output/preprocessed.feat/reg/highres.nii.gz --warp=$FEAT_DIR/${i}/FEAT_output/preprocessed.feat/reg/example_func2highres_warp.nii.gz --out=$FEAT_DIR/${i}/FEAT_output/preprocessed.feat/reg/highres2example_func_warp.nii.gz
 
 cd $MASK_DIR/${i}/anat-nii
 
@@ -81,7 +81,7 @@ do
 
 filename="${f%%.*}"
 
-applywarp --ref=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/example_func --in=${f} --warp=$FEAT_DIR/${i}/FEAT_output/preprocessing.feat/reg/highres2example_func_warp.nii.gz --out=$MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz
+applywarp --ref=$FEAT_DIR/${i}/FEAT_output/preprocessed.feat/reg/example_func --in=${f} --warp=$FEAT_DIR/${i}/FEAT_output/preprocessed.feat/reg/highres2example_func_warp.nii.gz --out=$MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz
 
 fslmaths $MASK_DIR/${i}/func/${filename}_func_nonbinary.nii.gz -thr $BIN_THR -bin $MASK_DIR/${i}/func_binarised/${filename}_func_binary${BIN_THR}.nii.gz
 
